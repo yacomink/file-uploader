@@ -273,7 +273,8 @@ qq.FileUploaderBasic = function(o){
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
-            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."            
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled.",            
+            noFiles: "Only files on your computer can be uploaded."            
         },
         showMessage: function(message){
             alert(message);
@@ -378,6 +379,13 @@ qq.FileUploaderBasic.prototype = {
         this._button.reset();   
     },  
     _uploadFileList: function(files){
+        
+        if (typeof files == 'undefined' || files.length < 1)
+        {
+            this._error('noFiles', 'empty');
+            return false;
+        }
+        
         for (var i=0; i<files.length; i++){
             if ( !this._validateFile(files[i])){
                 return;
