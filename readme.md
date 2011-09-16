@@ -92,7 +92,14 @@ If you can't find the one you need, check the readme.txt in the same folder.
     messages: {
         // error messages, see qq.FileUploaderBasic for content            
     },
-    showMessage: function(message){ alert(message); }        
+    showMessage: function(message){ alert(message); },
+
+    // provide html element for a custome drop zone
+    dropElement: document.getElementById('my-drop-zone'),
+
+    // For use with dropElement, skip upload button creation for a drop-only uploader
+    skipUploadTemplate: true,
+
 
 Instance methods
 

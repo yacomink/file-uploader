@@ -489,8 +489,10 @@ qq.FileUploader = function(o){
     // additional options    
     qq.extend(this._options, {
         element: null,
+        dropElement: null,
         // if set, will be used instead of qq-upload-list in template
         listElement: null,
+        skipUploadTemplate : false,
                 
         template: '<div class="qq-uploader">' + 
                 '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
@@ -529,13 +531,18 @@ qq.FileUploader = function(o){
     qq.extend(this._options, o);       
 
     this._element = this._options.element;
-    this._element.innerHTML = this._options.template;        
+
+    this._dropElement = this._options.dropElement ? this._options.dropElement : this._options.element;
+
+    if (!(this._options.skipUploadTemplate && this._options.dropElement)) {
+      this._element.innerHTML = this._options.template;
+      this._button = this._createUploadButton(this._find(this._element, 'button'));
+    }
+
     this._listElement = this._options.listElement || this._find(this._element, 'list');
     
     this._classes = this._options.classes;
-        
-    this._button = this._createUploadButton(this._find(this._element, 'button'));        
-    
+
     this._bindCancelEvent();
     this._setupDragDrop();
 };
@@ -557,7 +564,7 @@ qq.extend(qq.FileUploader.prototype, {
     },
     _setupDragDrop: function(){
         var self = this,
-            dropArea = this._find(this._element, 'drop');                        
+            dropArea = this._find(this._dropElement, 'drop');                        
 
         var dz = new qq.UploadDropZone({
             element: dropArea,
@@ -572,8 +579,14 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.removeClass(dropArea, self._classes.dropActive);  
             },
             onDrop: function(e){
-                dropArea.style.display = 'none';
-                qq.removeClass(dropArea, self._classes.dropActive);
+                // changed to remove ALL drop zone notes when dropped!
+                var els = qq.getByClass(document, self._options.classes['drop']);
+                for (var i=0; i<els.length; i++) {
+                  if (els[i]) {
+                    qq.removeClass(els[i], self._classes.dropActive);
+                    els[i].style.display = 'none';
+                  }
+                }
                 self._uploadFileList(e.dataTransfer.files);    
             }
         });
