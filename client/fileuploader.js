@@ -267,6 +267,8 @@ qq.FileUploaderBasic = function(o){
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
         onCancel: function(id, fileName){},
+		// optional handler to catch image elements drag/dropped from browser window
+		urlHandler: false,
         // messages                
         messages: {
             typeError: "{file} has invalid extension. Only {extensions} are allowed.",
@@ -587,7 +589,26 @@ qq.extend(qq.FileUploader.prototype, {
                     els[i].style.display = 'none';
                   }
                 }
-                self._uploadFileList(e.dataTransfer.files);    
+
+				
+				if (self._options.urlHandler && e.dataTransfer.files.length == 0)
+				{
+					if (e.dataTransfer.types.indexOf && -1 != e.dataTransfer.types.indexOf("text/html") || e.dataTransfer.types.contains && -1 != e.dataTransfer.types.contains("text/html"))
+					{
+						var dropData = e.dataTransfer.getData("text/html");
+						var dropDataEl = new Element('div');
+						dropDataEl.update(e.dataTransfer.getData("text/html"));
+						var droppedImage = dropDataEl.down('img', null, 0);
+						
+
+						if (droppedImage && droppedImage.src.indexOf("data:") < 0)
+							return self._options.urlHandler( e, droppedImage.src );
+						else
+							return self._options.urlHandler( e, null );
+					}
+				}
+
+				self._uploadFileList(e.dataTransfer.files);    
             }
         });
                 
@@ -603,8 +624,8 @@ qq.extend(qq.FileUploader.prototype, {
             
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
-            if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
-                dropArea.style.display = 'none';                                            
+            if ( ! relatedTarget || relatedTarget.nodeName == "HTML" || relatedTarget.nodeName == "BODY"){               
+              dropArea.style.display = 'none';
             }
         });                
     },
