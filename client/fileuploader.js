@@ -494,7 +494,8 @@ qq.FileUploader = function(o){
         dropElement: null,
         // if set, will be used instead of qq-upload-list in template
         listElement: null,
-        skipUploadTemplate : false,
+        skipDropElement : false,
+        skipUploadElement : false,
                 
         template: '<div class="qq-uploader">' + 
                 '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
@@ -534,7 +535,9 @@ qq.FileUploader = function(o){
 
     this._element = this._options.element;
 
-    this._dropElement = this._options.dropElement ? this._options.dropElement : this._options.element;
+    if (!this._options.skipDropTemplate) {
+      this._dropElement = this._options.dropElement ? this._options.dropElement : this._options.element;
+    }
 
     if (!(this._options.skipUploadTemplate && this._options.dropElement)) {
       this._element.innerHTML = this._options.template;
