@@ -528,7 +528,9 @@ qq.FileUploader = function(o){
             // used in css to hide progress spinner
             success: 'qq-upload-success',
             fail: 'qq-upload-fail'
-        }
+        },
+		additionalUploadIds: false
+
     });
     // overwrite options with user supplied    
     qq.extend(this._options, o);       
@@ -542,6 +544,13 @@ qq.FileUploader = function(o){
     if (!(this._options.skipUploadTemplate && this._options.dropElement)) {
       this._element.innerHTML = this._options.template;
       this._button = this._createUploadButton(this._find(this._element, 'button'));
+	  if (this._options.additionalUploadIds)
+	  {
+		for (var i=0; i < this._options.additionalUploadIds.length; i++ )
+		{
+			this._createUploadButton($(this._options.additionalUploadIds[i]));
+		}
+	  }
     }
 
     this._listElement = this._options.listElement || this._find(this._element, 'list');
@@ -549,7 +558,7 @@ qq.FileUploader = function(o){
     this._classes = this._options.classes;
 
     this._bindCancelEvent();
-    this._setupDragDrop();
+    if (!this._options.skipDropTemplate) this._setupDragDrop();
 };
 
 // inherit from Basic Uploader
